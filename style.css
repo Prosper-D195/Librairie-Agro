@@ -1,0 +1,259 @@
+:root {
+    --primary-color: #2e7d32;
+    --primary-hover: #1b5e20;
+    --accent-color: #f57c00;
+    --bg-color: #f1f8e9;
+    --card-bg: #ffffff;
+    --text-color: #37474f;
+    --text-light: #78909c;
+    --border-color: #cfd8dc;
+    --danger-color: #d32f2f;
+    --danger-hover: #c62828;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding-bottom: 2rem;
+}
+
+/* En-tête Adaptatif */
+header {
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column; /* Par défaut sur mobile : empilé */
+    gap: 1rem;
+    align-items: center;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 1.5rem;
+}
+
+header h1 span {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    display: block;
+}
+
+/* Boutons */
+.btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    font-size: 0.95rem;
+    width: 100%; /* Boutons en pleine largeur sur mobile par défaut */
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+    background-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.btn-danger {
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+}
+
+.btn-danger:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-status {
+    background-color: #e0e0e0;
+    color: #333;
+}
+
+.btn-status.read {
+    background-color: #c8e6c9;
+    color: #256029;
+}
+
+/* Grille de livres fluide (S'adapte automatiquement selon l'espace disponible) */
+main {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+.library-grid {
+    display: grid;
+    /* auto-fit calcule dynamiquement le nombre de colonnes de minimum 260px */
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Fiches Livres */
+.book-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-top: 5px solid var(--primary-color);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.book-category {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.book-title {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+    color: #1a237e;
+    line-height: 1.4;
+}
+
+.book-author {
+    font-style: italic;
+    color: var(--text-light);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.book-pages {
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Actions alignées proprement sur une ligne */
+.book-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: auto;
+}
+
+.book-actions .btn {
+    flex: 1; /* Les deux boutons partagent l'espace équitablement */
+    padding: 0.5rem;
+    font-size: 0.85rem;
+}
+
+/* Modales / Formulaires pour petits et grands écrans */
+dialog {
+    margin: auto;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    padding: 1.5rem;
+    width: 92%;
+    max-width: 480px;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px); /* Effet flouté moderne en arrière-plan */
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group select {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 1rem;
+    appearance: none; /* Uniformise le design des selects sur mobile */
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (Ajustements pour écrans intermédiaires et ordinateurs)
+   ========================================================================== */
+
+/* Écrans à partir des tablettes et ordinateurs (600px et plus) */
+@media (min-width: 600px) {
+    .header-container {
+        flex-direction: row; /* Aligne le titre et le bouton sur la même ligne */
+        justify-content: space-between;
+    }
+
+    header h1 {
+        font-size: 1.8rem;
+        text-align: left;
+    }
+
+    .btn {
+        width: auto; /* Les boutons reprennent leur taille normale */
+    }
+
+    dialog {
+        padding: 2rem;
+    }
+}

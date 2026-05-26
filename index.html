@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroLib - Bibliothèque Agro-business</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>AgroLib <span>Agro-business</span></h1>
+            <button id="open-modal-btn" class="btn btn-primary">+ Nouveau Livre</button>
+        </div>
+    </header>
+
+    <main>
+        <div id="library-grid" class="library-grid">
+            </div>
+    </main>
+
+    <dialog id="book-modal">
+        <div class="modal-content">
+            <h2>Ajouter un nouveau livre</h2>
+            <form id="add-book-form" method="dialog">
+                <div class="form-group">
+                    <label for="title">Titre du livre :</label>
+                    <input type="text" id="title" required placeholder="Ex: Guide de la culture du Papayer">
+                </div>
+                
+                <div class="form-group">
+                    <label for="author">Auteur :</label>
+                    <input type="text" id="author" required placeholder="Ex: Dr. Traoré">
+                </div>
+
+                <div class="form-group">
+                    <label for="pages">Nombre de pages :</label>
+                    <input type="number" id="pages" required min="1" placeholder="Ex: 150">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Catégorie :</label>
+                    <select id="category" required>
+                        <option value="Production Végétale">Production Végétale</option>
+                        <option value="Production Animale">Production Animale</option>
+                        <option value="Agro-transformation">Agro-transformation</option>
+                        <option value="Gestion & Économie">Gestion & Économie</option>
+                        <option value="Financement">Financement</option>
+                    </select>
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label for="read">
+                        <input type="checkbox" id="read"> Déjà lu
+                    </label>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" id="close-modal-btn" class="btn btn-secondary">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <script src="script.js"></script>
+</body>
+</html>
