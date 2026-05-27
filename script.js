@@ -1,176 +1,208 @@
-// 1. Stockage de données (Le Modèle)
-const myLibrary = [];
+// ==========================================================================
+// 1. CLASSE BOOK (Modèle d'un livre unique)
+// ==========================================================================
+class Book {
+    constructor(title, author, pages, category, read, coverUrl = null) {
+        this.id = crypto.randomUUID(); // Identifiant unique
+        this.title = title;
+        this.author = author || "Auteur Inconnu";
+        this.pages = pages || "N/C";
+        this.category = category;
+        this.read = read; // Booléen
+        this.coverUrl = coverUrl;
+    }
 
-// 2. Constructeur d'objet Book
-function Book(title, author, pages, category, read) {
-    this.id = crypto.randomUUID(); // Génération de l'ID unique
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.category = category;
-    this.read = read; // Booléen : true ou false
+    // Méthode de classe pour inverser le statut de lecture (anciennement le prototype)
+    toggleReadStatus() {
+        this.read = !this.read;
+    }
 }
 
-// 3. Prototype pour inverser le statut de lecture
-Book.prototype.toggleReadStatus = function() {
-    this.read = !this.read;
-};
+// ==========================================================================
+// 2. CLASSE LIBRARY (Gestionnaire de la collection / "Vecteur")
+// ==========================================================================
+class Library {
+    constructor() {
+        // Notre tableau interne qui agit comme un std::vector
+        this.books = []; 
+    }
 
-// 4. Fonction distincte pour ajouter un livre au tableau
-function addBookToLibrary(title, author, pages, category, read) {
-    const newBook = new Book(title, author, pages, category, read);
-    myLibrary.push(newBook);
-    return newBook;
-}
+    // Équivalent d'une fonction d'insertion dans le vecteur
+    addBook(title, author, pages, category, read, coverUrl = null) {
+        const newBook = new Book(title, author, pages, category, read, coverUrl);
+        this.books.push(newBook);
+        return newBook;
+    }
 
-// 5. Ajout manuel des 26 livres demandés sur l'Agro-business
-function loadSampleBooks() {
-    // --- PRODUCTION VÉGÉTALE ---
-    // Raisin (2)
-    addBookToLibrary("La culture du Raisin de table en Afrique de l'Ouest", "Dr. Amadou Diallo", 145, "Production Végétale", true);
-    addBookToLibrary("Viticulture tropicale : Réussir la vigne en Afrique", "Marc Bonnin", 210, "Production Végétale", false);
-    // Pomme (2)
-    addBookToLibrary("Le Pommier en zone tropicale d'altitude", "Prof. Jean-Pierre Ndoye", 180, "Production Végétale", true);
-    addBookToLibrary("Guide pratique de la culture de la pomme fruit en Afrique", "Fatou Sylla", 95, "Production Végétale", false);
-    // Papaye (2)
-    addBookToLibrary("Optimiser le rendement de la Papaye Calina IPB9", "Ing. Prosper", 120, "Production Végétale", true);
-    addBookToLibrary("Maladies et ravageurs du papayer en Afrique subsaharienne", "Koffi Mensah", 160, "Production Végétale", false);
+    // Retirer un livre du vecteur par son ID
+    removeBook(id) {
+        const index = this.books.findIndex(book => book.id === id);
+        if (index !== -1) {
+            this.books.splice(index, 1);
+        }
+    }
 
-    // --- PRODUCTION ANIMALE ---
-    // Poulets de chair (2)
-    addBookToLibrary("Élevage de poulets de chair : Guide complet du producteur africain", "Dr. Moussa Traoré", 250, "Production Animale", true);
-    addBookToLibrary("Rentabiliser son poulailler de chair en 45 jours", "Alioune Diop", 110, "Production Animale", false);
-    // Lapins (2)
-    addBookToLibrary("Cuniculture africaine : Élever des lapins pour le profit", "Pauline Biya", 135, "Production Animale", false);
-    addBookToLibrary("Guide moderne de l'élevage de lapin en climat chaud", "Samuel Eto'o", 175, "Production Animale", true);
-    // Cailles (2)
-    addBookToLibrary("La Coturniculture : Élevage des cailles et opportunités", "Dr. Ibrahim Issa", 90, "Production Animale", false);
-    addBookToLibrary("Les secrets des œufs de caille : Production et bienfaits", "Aminata Touré", 105, "Production Animale", true);
+    // Trouver un livre spécifique dans le vecteur
+    findBook(id) {
+        return this.books.find(book => book.id === id);
+    }
 
-    // --- AGRO-TRANSFORMATION (6)
-    addBookToLibrary("Transformation locale des fruits tropicaux en jus et confitures", "Sokhna Diarra", 220, "Agro-transformation", true);
-    addBookToLibrary("Séchage solaire des produits agricoles en Afrique", "Ing. Pierre Gomis", 140, "Agro-transformation", false);
-    addBookToLibrary("Valorisation du manioc : De la racine au gari", "Chantal Bouanga", 190, "Agro-transformation", true);
-    addBookToLibrary("Conservation et emballage des produits agroalimentaires", "Kofi Annan", 310, "Agro-transformation", false);
-    addBookToLibrary("Transformation semi-industrielle de la tomate", "Youssef Benjelloun", 125, "Agro-transformation", false);
-    addBookToLibrary("Guide de production d'huile d'arachide et de tournesol", "Mamadou Sow", 165, "Agro-transformation", true);
+    // Charger les données de l'API Open Library directement dans notre collection
+    async fetchAgroBooks() {
+        const agribusinessQueries = [
+            { query: "agriculture tropical fruit", category: "Production Végétale" },
+            { query: "poultry farming livestock", category: "Production Animale" },
+            { query: "food processing agro", category: "Agro-transformation" },
+            { query: "agricultural economics management", category: "Gestion & Économie" },
+            { query: "agricultural finance credit", category: "Financement" }
+        ];
 
-    // --- GESTION & ÉCONOMIE AGRICOLE (6)
-    addBookToLibrary("Gestion financière de la ferme africaine", "Ousmane Kane", 280, "Gestion & Économie", true);
-    addBookToLibrary("Calcul des coûts de production en agriculture", "Marie-Louise Cole", 150, "Gestion & Économie", false);
-    addBookToLibrary("Entrepreneuriat Agricole : Créer des actifs durables", "Jean-Marc Yao", 205, "Gestion & Économie", true);
-    addBookToLibrary("Marketing des produits agricoles et circuits courts", "Awa Thiam", 185, "Gestion & Économie", false);
-    addBookToLibrary("Planification stratégique d'une exploitation agro-pastorale", "Dr. David Luke", 240, "Gestion & Économie", true);
-    addBookToLibrary("Logistique et chaîne de valeur agricole en Afrique", "Modibo Keita", 300, "Gestion & Économie", false);
+        try {
+            for (const target of agribusinessQueries) {
+                const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(target.query)}&limit=3`;
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Erreur réseau");
+                
+                const data = await response.json();
+                
+                data.docs.forEach(doc => {
+                    const title = doc.title;
+                    const author = doc.author_name ? doc.author_name[0] : "Auteur Anonyme";
+                    const pages = doc.number_of_pages_median || Math.floor(Math.random() * 130 + 100);
+                    const coverUrl = doc.cover_i ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg` : null;
+                    const read = Math.random() > 0.5;
 
-    // --- FINANCEMENT (6)
-    addBookToLibrary("Le guide des financements agricoles en Afrique", "Abdoulaye Bio Tchané", 260, "Financement", true);
-    addBookToLibrary("Lever des fonds pour son projet agro-pastoral", "Rebecca Enonchong", 145, "Financement", false);
-    addBookToLibrary("Microfinance et crédit agricole : Mode d'emploi", "Tidjane Thiam", 215, "Financement", true);
-    addBookToLibrary("Subventions et appuis internationaux à l'agriculture", "Elena Diallo", 195, "Financement", false);
-    addBookToLibrary("Le Crowdfunding au service de l'agro-business africain", "Idriss Seydou", 130, "Financement", false);
-    addBookToLibrary("Mécanismes d'assurance récolte et gestion des risques", "Cheikh Anta Diop", 270, "Financement", true);
-}
-
-// 6. Logique d'affichage (La Vue)
-const libraryGrid = document.getElementById('library-grid');
-
-function displayLibrary() {
-    // On vide l'affichage existant pour éviter les doublons
-    libraryGrid.innerHTML = '';
-
-    myLibrary.forEach(book => {
-        // Création de la fiche
-        const card = document.createElement('div');
-        card.classList.add('book-card');
-        // Association du DOM à l'objet via l'attribut de données data-id
-        card.setAttribute('data-id', book.id);
-
-        card.innerHTML = `
-            <div>
-                <div class="book-category">${book.category}</div>
-                <h3 class="book-title">${book.title}</h3>
-                <p class="book-author">Par ${book.author}</p>
-                <p class="book-pages">${book.pages} pages</p>
-            </div>
-            <div class="book-actions">
-                <button class="btn btn-status ${book.read ? 'read' : ''}">
-                    ${book.read ? 'Déjà lu' : 'Non lu'}
-                </button>
-                <button class="btn btn-danger delete-btn">Supprimer</button>
-            </div>
-        `;
-
-        libraryGrid.appendChild(card);
-    });
-
-    // Liaison des événements sur les nouveaux boutons injectés
-    setupCardEvents();
-}
-
-// 7. Gestion des événements sur les fiches (Suppression et Changement de statut)
-function setupCardEvents() {
-    // Gestion du bouton de changement de statut de lecture
-    const statusButtons = document.querySelectorAll('.btn-status');
-    statusButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const card = e.target.closest('.book-card');
-            const bookId = card.getAttribute('data-id');
-            
-            // Recherche de l'objet correspondant dans le modèle
-            const book = myLibrary.find(b => b.id === bookId);
-            if (book) {
-                book.toggleReadStatus(); // Utilisation de la fonction prototype
-                displayLibrary();        // Rafraîchissement de la vue
+                    // Ajout direct via la méthode de la bibliothèque
+                    this.addBook(title, author, pages, target.category, read, coverUrl);
+                });
             }
-        });
-    });
-
-    // Gestion du bouton Supprimer
-    const deleteButtons = document.querySelectorAll('.delete-btn');
-    deleteButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            const card = e.target.closest('.book-card');
-            const bookId = card.getAttribute('data-id');
-            
-            // Trouver l'index de l'objet dans le tableau et le retirer
-            const bookIndex = myLibrary.findIndex(b => b.id === bookId);
-            if (bookIndex !== -1) {
-                myLibrary.splice(bookIndex, 1);
-                displayLibrary(); // Rafraîchissement de la vue
-            }
-        });
-    });
+        } catch (error) {
+            console.error("Erreur lors de la récupération des livres:", error);
+        }
+    }
 }
 
-// 8. Gestion de la Modale et du Formulaire
-const modal = document.getElementById('book-modal');
-const openModalBtn = document.getElementById('open-modal-btn');
-const closeModalBtn = document.getElementById('close-modal-btn');
-const addBookForm = document.getElementById('add-book-form');
+// ==========================================================================
+// 3. LOGIQUE D'AFFICHAGE (L'Interface Utilisateur / UI)
+// ==========================================================================
+class LibraryUI {
+    constructor(libraryInstance) {
+        this.library = libraryInstance; // Liaison avec l'instance de la bibliothèque
+        this.grid = document.getElementById('library-grid');
+        this.modal = document.getElementById('book-modal');
+        this.form = document.getElementById('add-book-form');
+        
+        // Boutons de contrôle de la modale
+        this.openModalBtn = document.getElementById('open-modal-btn');
+        this.closeModalBtn = document.getElementById('close-modal-btn');
 
-openModalBtn.addEventListener('click', () => modal.showModal());
-closeModalBtn.addEventListener('click', () => modal.close());
+        this.initEvents();
+    }
 
-addBookForm.addEventListener('submit', (e) => {
-    // Récupération des valeurs du formulaire
-    const title = document.getElementById('title').value;
-    const author = document.getElementById('author').value;
-    const pages = parseInt(document.getElementById('pages').value);
-    const category = document.getElementById('category').value;
-    const read = document.getElementById('read').checked;
+    // Initialisation des écouteurs d'événements globaux
+    initEvents() {
+        this.openModalBtn.addEventListener('click', () => this.modal.showModal());
+        this.closeModalBtn.addEventListener('click', () => this.modal.close());
+        
+        this.form.addEventListener('submit', (e) => this.handleFormSubmit(e));
+    }
 
-    // Ajout au modèle
-    addBookToLibrary(title, author, pages, category, read);
+    // Affichage des cartes dans la grille HTML
+    render() {
+        this.grid.innerHTML = '';
 
-    // Réinitialisation du formulaire et fermeture de la modale
-    addBookForm.reset();
-    modal.close();
+        if (this.library.books.length === 0) {
+            this.grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-light);">
+                                        Chargement des livres agro-business ou bibliothèque vide...
+                                   </div>`;
+            return;
+        }
 
-    // Mise à jour de la vue
-    displayLibrary();
+        this.library.books.forEach(book => {
+            const card = document.createElement('div');
+            card.classList.add('book-card');
+            card.setAttribute('data-id', book.id); // Association DOM -> Objet via l'ID unique
+
+            const coverHTML = book.coverUrl 
+                ? `<img src="${book.coverUrl}" alt="${book.title}" style="width:100%; height:180px; object-fit:contain; margin-bottom:1rem; border-radius:4px;">`
+                : `<div style="width:100%; height:140px; background:#e0e0e0; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; border-radius:4px; font-size:0.8rem; color:#666;">Pas d'image</div>`;
+
+            card.innerHTML = `
+                <div>
+                    <div class="book-category">${book.category}</div>
+                    ${coverHTML}
+                    <h3 class="book-title" style="font-size:1.05rem;">${book.title}</h3>
+                    <p class="book-author">Par ${book.author}</p>
+                    <p class="book-pages">${book.pages} pages</p>
+                </div>
+                <div class="book-actions">
+                    <button class="btn btn-status ${book.read ? 'read' : ''}">
+                        ${book.read ? 'Déjà lu' : 'Non lu'}
+                    </button>
+                    <button class="btn btn-danger delete-btn">Supprimer</button>
+                </div>
+            `;
+
+            this.grid.appendChild(card);
+        });
+
+        this.bindCardEvents();
+    }
+
+    // Gestion des clics sur les boutons de chaque carte (Supprimer / Modifier statut)
+    bindCardEvents() {
+        // Boutons de statut de lecture
+        this.grid.querySelectorAll('.btn-status').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.closest('.book-card').getAttribute('data-id');
+                const book = this.library.findBook(id);
+                if (book) {
+                    book.toggleReadStatus();
+                    this.render(); // Rafraîchir la vue
+                }
+            });
+        });
+
+        // Boutons de suppression
+        this.grid.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const id = e.target.closest('.book-card').getAttribute('data-id');
+                this.library.removeBook(id);
+                this.render(); // Rafraîchir la vue
+            });
+        });
+    }
+
+    // Gestion de la soumission du formulaire
+    handleFormSubmit(e) {
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const pages = parseInt(document.getElementById('pages').value);
+        const category = document.getElementById('category').value;
+        const read = document.getElementById('read').checked;
+
+        // Ajout dans notre instance de classe Library
+        this.library.addBook(title, author, pages, category, read);
+
+        this.form.reset();
+        this.modal.close();
+        this.render();
+    }
+}
+
+// ==========================================================================
+// 4. INITIALISATION DE L'APPLICATION
+// ==========================================================================
+// Création de l'instance principale de la bibliothèque (le modèle contenant le tableau/vecteur)
+const myAgroLibrary = new Library();
+
+// Création de l'interface utilisateur en lui passant notre bibliothèque en paramètre (la vue)
+const appUI = new LibraryUI(myAgroLibrary);
+
+// Lancement initial de l'affichage (indique que c'est vide/en cours de chargement)
+appUI.render();
+
+// Chargement asynchrone des données de l'API et mise à jour automatique de la vue
+myAgroLibrary.fetchAgroBooks().then(() => {
+    appUI.render();
 });
-
-// --- INITIALISATION ---
-loadSampleBooks();
-displayLibrary();
